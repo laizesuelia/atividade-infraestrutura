@@ -1,10 +1,10 @@
-# Desafio de Automação de Infraestrutura - ESIG Group
+# Desafio de Automação de Infraestrutura
+
+Link do vídeo: https://youtu.be/0raPaqIIv6I
 
 Este repositório contém a solução para o desafio técnico de infraestrutura, focado na automação de rotinas de backup de banco de dados e monitoramento resiliente de serviços de aplicação (Tomcat e JBoss).
 
 ## 🛠️ Arquitetura e Decisões Técnicas
-
-Para garantir a entrega ágil, máxima compatibilidade e mitigar problemas de encoding de caminhos no ecossistema Windows, a solução foi desenvolvida utilizando **PowerShell Core**, a ferramenta padrão de mercado para automação em infraestrutura Microsoft.
 
 * **Banco de Dados:** PostgreSQL 18.
 * **Serviços de Aplicação:** Simulados via gerenciamento de processos e janelas nativas em background para garantir validação leve de lógica de recuperação (*Auto-healing*).
@@ -16,7 +16,15 @@ Para garantir a entrega ágil, máxima compatibilidade e mitigar problemas de en
 atividade-infraestrutura/
 │
 ├── scripts/
-│   ├── dump_banco.ps1          # Automação de backup físico do Postgres
-│   ├── simular_servicos.ps1     # Simulador de background do Tomcat/JBoss
-│   └── verificar_instancias.ps1 # Script de monitoramento e Auto-healing (Regra de 1 min)
+│   ├── dump_banco.ps1          # Automação de backup físico do Postgres (Windows)
+│   ├── simular_servicos.ps1     # Simulador de background do Tomcat/JBoss (Windows)
+│   ├── verificar_instancias.ps1 # Script de monitoramento e Auto-healing (Windows)
+│   │
+│   ├── dump_banco.sh           # Automação de backup físico do Postgres (Linux)
+│   ├── simular.sh              # Simulador de processos em background (Linux)
+│   └── monitor.sh              # Script de monitoramento e Auto-healing (Linux)
 └── README.md                    # Documentação do projeto
+
+## ⚙️ Como Configurar o Ambiente
+
+A solução foi projetada com foco em portabilidade, permitindo a validação da lógica de automação e resiliência em ambos os ecossistemas de desenvolvimento.
