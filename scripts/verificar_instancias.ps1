@@ -1,20 +1,29 @@
-#!/bin/bash
-OFFLINE_COUNTER=0
-echo "Iniciando monitoramento de serviços no Linux..."
-while true; do
-    TOMCAT_ALIVE=$(pgrep -f esig_tomcat)
-    JBOSS_ALIVE=$(pgrep -f esig_jboss)
-    if [ -n "$TOMCAT_ALIVE" ] && [ -n "$JBOSS_ALIVE" ]; then
-        echo "[$(date +%H:%M:%S)] [ONLINE] Tomcat e JBoss operando normalmente."
-        OFFLINE_COUNTER=0
-    else
-        OFFLINE_COUNTER=$((OFFLINE_COUNTER + 10))
-        echo "[$(date +%H:%M:%S)] [ALERTA] Serviços indisponíveis! Tempo: $OFFLINE_COUNTER s."
-        if [ $OFFLINE_COUNTER -ge 60 ]; then
-            echo "[RECOVERY] Ativando autocura..."
-            /home/vboxuser/Desafio-ESIG/scripts/simular.sh
-            OFFLINE_COUNTER=0
-        fi
-    fi
-    sleep 10
-done
+# Script de Monitoramento e Auto-Recuperação (Auto-healing) - ESIG
+Clear-Host
+Write-Host "Iniciando Monitoramento dos Serviços (Pressione Ctrl+C para parar)..." -ForegroundColor Cyan
+
+$offline_counter = 0
+
+while ($true) {
+    # Procura se a janela do simulador está aberta no Windows
+    $servidor_vivo = Get-Process | Where-Object {$_.MainWindowTitle -match "Servidores Ativos"}
+
+    if ($servidor_vivo) {
+        Write-Host "[$(Get-Date -Format 'HH:mm:ss')] [ONLINE] Tomcat e JBoss estão rodando normalmente." -ForegroundColor Green
+        $offline_counter = 0
+    } else {
+        $offline_counter += 10
+        Write-Host "[$(Get-Date -Format 'HH:mm:ss')] [ALERTA] Servidores estão FORA DO AR! Tempo offline: $offline_counter segundos." -ForegroundColor Red
+        
+        # REGRA EXTRA: Se ficar offline por mais de 1 minuto (60 segundos), reinicia
+        if ($offline_counter -ge 60) {
+            Write-Host "[RECOVERY] Instâncias offline há mais de 1 minuto! Reiniciando serviços automaticamente..." -ForegroundColor Yellow
+            
+            # Abre o simulador novamente em uma nova janela
+            Start-Process powershell.exe -ArgumentList "-File C:\Desafio-Infraestrutura-ESIG\scripts\simular_servicos.ps1"
+            $offline_counter = 0
+        }
+    }
+
+    Start-Sleep -Seconds 10 # Executa a checagem a cada 10 segundos
+}
